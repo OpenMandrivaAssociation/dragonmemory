@@ -2,7 +2,7 @@
 
 Name:		dragonmemory
 Version:	1.0
-Release:	%mkrel 1
+Release:	%mkrel 2
 Summary:	A memory game where you have to match identical chips
 License:	GPLv3
 Group:		Games/Boards
