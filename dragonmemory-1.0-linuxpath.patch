@@ -1,0 +1,122 @@
+diff -urN DragonMemory/define.h DragonMemory-patched/define.h
+--- DragonMemory/define.h	2011-11-29 02:47:46.000000000 +1100
++++ DragonMemory-patched/define.h	2011-12-06 20:22:04.120132624 +1100
+@@ -1,9 +1,5 @@
+-#define DATADIR "."
+-// Windows & Android
+-#define SAVEDIR "."
++#define DATADIR "/usr/share/games/dragonmemory"
+ 
+-// Linux 
+-// #define SAVEDIR "/homedir/.config/package" (leer de argv[])
+ #define MAXLEVELS 15
+ #define MAXTILES 80
+ #define PLAYGAME 1
+diff -urN DragonMemory/dragonmemory.cpp DragonMemory-patched/dragonmemory.cpp
+--- DragonMemory/dragonmemory.cpp	2011-11-30 01:13:07.000000000 +1100
++++ DragonMemory-patched/dragonmemory.cpp	2011-12-06 20:31:47.000000000 +1100
+@@ -20,6 +20,7 @@
+ #include<SDL/SDL_mixer.h>
+ #include <GL/gl.h>
+ #include <GL/glext.h>
++#include <sys/stat.h>
+ #endif
+ 
+ #include"define.h"
+diff -urN DragonMemory/file.h DragonMemory-patched/file.h
+--- DragonMemory/file.h	2011-11-29 06:00:36.000000000 +1100
++++ DragonMemory-patched/file.h	2011-12-06 20:32:05.000000000 +1100
+@@ -2,10 +2,32 @@
+ {
+     int hiByte, loByte;
+     FILE *scores;
+-    scores = fopen(SAVEDIR "/hiscore.dat", "rb");
++
++    // Set the savegame directory
++    char *homedir;
++    char *savedir;
++    char *savefile;
++    FILE *fd = NULL;
++
++    homedir = getenv("HOME");
++    savedir = (char *)malloc(strlen(homedir) + 22);
++    sprintf(savedir, "%s/.config/dragonmemory", homedir);
++    // Check if we already have a savegame directory
++    if ((fd = fopen(savedir, "r")) == NULL)
++    {
++        mkdir(savedir, S_IRUSR | S_IWUSR | S_IXUSR);
++    }
++    else
++    {
++        fclose(fd);
++    }
++
++    savefile = (char *)malloc(strlen(savedir) + 13);
++    sprintf(savefile, "%s/hiscore.dat", savedir);
++    scores = fopen(savefile, "rb");
+     if(scores == NULL)
+     {
+-		scores = fopen(SAVEDIR "/hiscore.dat", "wb+");
++		scores = fopen(savefile, "wb+");
+ 		fputc(1 ,scores);
+ 		fputc(0, scores);
+ 		fputc(0 ,scores);
+@@ -13,7 +35,7 @@
+ 		fputc(0 ,scores);
+ 		fputc(0 ,scores);
+ 		fclose(scores);
+-		scores = fopen(SAVEDIR "/hiscore.dat", "rb");
++		scores = fopen(savefile, "rb");
+     }
+     maxLevel = fgetc(scores);
+     if(maxLevel == EOF)
+@@ -37,6 +59,8 @@
+ 	
+ 	mlevel[n].medal = fgetc(scores);
+     }
++    free(savefile);
++    free(savedir);
+     fclose(scores);
+ }
+ 
+@@ -47,7 +71,30 @@
+ // 1 extra byte at the BEGINING of the file to store the last unlocked level
+     int maxSavedLevel, hiByte, loByte;
+     FILE *scores;
+-    scores = fopen(SAVEDIR "/hiscore.dat", "rb+");
++
++    // Set the savegame directory
++    char *homedir;
++    char *savedir;
++    char *savefile;
++    FILE *fd = NULL;
++
++    homedir = getenv("HOME");
++    savedir = (char *)malloc(strlen(homedir) + 22);
++    sprintf(savedir, "%s/.config/dragonmemory", homedir);
++    // Check if we already have a savegame directory
++    if ((fd = fopen(savedir, "r")) == NULL)
++    {
++        mkdir(savedir, S_IRUSR | S_IWUSR | S_IXUSR);
++    }
++    else
++    {
++        fclose(fd);
++    }
++
++    savefile = (char *)malloc(strlen(savedir) + 13);
++    sprintf(savefile, "%s/hiscore.dat", savedir);
++
++    scores = fopen(savefile, "rb+");
+ 
+     maxSavedLevel = fgetc(scores);
+     if(levelNumber + 1 > maxSavedLevel)
+@@ -71,6 +118,8 @@
+     }
+     fputc(mlevel[levelNumber].medal, scores);
+ 
++    free(savefile);
++    free(savedir);
+     fclose(scores);
+ }
+ 
