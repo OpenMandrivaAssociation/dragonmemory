@@ -2,7 +2,7 @@
 
 Name:		dragonmemory
 Version:	1.0
-Release:	%mkrel 2
+Release:	3
 Summary:	A memory game where you have to match identical chips
 License:	GPLv3
 Group:		Games/Boards
@@ -14,8 +14,8 @@ Patch1:		dragonmemory-1.0-makefile.patch
 BuildRequires:	SDL-devel
 BuildRequires:	SDL_mixer-devel
 BuildRequires:	SDL_image-devel
-BuildRequires:	mesagl-devel
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
+BuildRequires:	pkgconfig(gl)
+BuildRequires:	pkgconfig(glu)
 
 %description
 Dragon Memory is a memory game where you have to match identical chips from
@@ -31,21 +31,19 @@ export CPPFLAGS="%{optflags}"
 %make
 
 %install
-%__rm -rf %{buildroot}
+mkdir -p %{buildroot}%{_gamesbindir}
+cp %{name} %{buildroot}%{_gamesbindir}/
 
-%__mkdir_p %{buildroot}%{_gamesbindir}
-%__cp %{name} %{buildroot}%{_gamesbindir}/
+mkdir -p %{buildroot}%{_gamesdatadir}/%{name}
 
-%__mkdir_p %{buildroot}%{_gamesdatadir}/%{name}
+cp -r fonts %{buildroot}%{_gamesdatadir}/%{name}/
+cp -r gfx %{buildroot}%{_gamesdatadir}/%{name}/
+cp -r music %{buildroot}%{_gamesdatadir}/%{name}/
+cp -r sounds %{buildroot}%{_gamesdatadir}/%{name}/
+cp -r themes %{buildroot}%{_gamesdatadir}/%{name}/
 
-%__cp -r fonts %{buildroot}%{_gamesdatadir}/%{name}/
-%__cp -r gfx %{buildroot}%{_gamesdatadir}/%{name}/
-%__cp -r music %{buildroot}%{_gamesdatadir}/%{name}/
-%__cp -r sounds %{buildroot}%{_gamesdatadir}/%{name}/
-%__cp -r themes %{buildroot}%{_gamesdatadir}/%{name}/
-
-%__mkdir_p %{buildroot}%{_datadir}/applications
-%__cat > %{buildroot}%{_datadir}/applications/mandriva-%{name}.desktop << EOF
+mkdir -p %{buildroot}%{_datadir}/applications
+cat > %{buildroot}%{_datadir}/applications/mandriva-%{name}.desktop << EOF
 [Desktop Entry]
 Name=Dragon Memory
 Comment=%{summary}
@@ -57,16 +55,19 @@ StartupNotify=true
 Categories=Game;BoardGame;
 EOF
 
-%__mkdir_p %{buildroot}%{_iconsdir}/hicolor/128x128/apps/
-%__cp %{SOURCE1} %{buildroot}%{_iconsdir}/hicolor/128x128/apps/
-
-%clean
-%__rm -rf %{buildroot}
+mkdir -p %{buildroot}%{_iconsdir}/hicolor/128x128/apps/
+cp %{SOURCE1} %{buildroot}%{_iconsdir}/hicolor/128x128/apps/
 
 %files
-%defattr(-,root,root)
 %doc Authors.txt License.txt
 %{_gamesbindir}/%{name}
 %{_gamesdatadir}/%{name}
 %{_datadir}/applications/mandriva-%{name}.desktop
 %{_iconsdir}/hicolor/*/apps/*.png
+
+
+%changelog
+* Tue Dec 06 2011 Andrey Bondrov <abondrov@mandriva.org> 1.0-2mdv2011.0
++ Revision: 738216
+- imported package dragonmemory
+
