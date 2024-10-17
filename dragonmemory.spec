@@ -6,7 +6,7 @@ Release:	4
 Summary:	A memory game where you have to match identical chips
 License:	GPLv3
 Group:		Games/Boards
-URL:		http://dragontech.net/index.php/games-en
+URL:		https://dragontech.net/index.php/games-en
 Source0:	http://dragontech.net/index.php/games-en?file=tl_files/dragontech/Software/%{oname}/%{oname}-source.tgz
 Source1:	dragonmemory.png
 Patch0:		dragonmemory-1.0-linuxpath.patch
